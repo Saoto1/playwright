@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
   test.slow();
-  let horaPantallaA = '';
+  let timePunchOut = '';
   await page.goto('https://orangehrm-demo-7x.orangehrmlive.com/auth/login');
   await page.getByRole('button', { name: 'Login as a Different Role' }).click();
   await page.getByRole('link', { name: 'ESS User' }).click();
@@ -16,7 +16,7 @@ test('test', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Out' }).click();
 
- horaPantallaA = await page
+ timePunchOut = await page
     .locator('#myPunchInOutTimeDiv .myPunchInOutDetailsValue')
     .evaluate(el => (el?.childNodes[0]?.textContent ?? '').trim());
 
@@ -26,18 +26,16 @@ test('test', async ({ page }) => {
     timeout: 10000
   });
 
-  // Ahora sí hacer clic en My Attendance Sheet
   const attendanceSheet = page.getByRole('link', { name: 'My Attendance Sheet' });
 
   await attendanceSheet.waitFor({ state: 'visible' });
   await attendanceSheet.scrollIntoViewIfNeeded();
   await attendanceSheet.click();
 
-  // Obtener el texto de la pantalla B
-  const textoPantallaB = await page.locator('.last-punched-out-time-time').innerText();
+  const lastTime = await page.locator('.last-punched-out-time-time').innerText();
 
-  const horaPantallaA_12h = to12h(horaPantallaA);
-  expect(textoPantallaB).toContain(horaPantallaA_12h);
+  const timePunchOut12h = to12h(timePunchOut);
+  expect(lastTime).toContain(timePunchOut12h);
 
 });
 
